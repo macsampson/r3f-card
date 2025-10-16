@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber"
-import { OrbitControls } from "@react-three/drei"
+// import { OrbitControls } from "@react-three/drei"
 import HoloCard from "./HoloCard"
 import { Suspense } from "react"
 

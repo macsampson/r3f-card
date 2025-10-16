@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import { useFrame, useLoader } from "@react-three/fiber"
-import { MeshReflectorMaterial, useGLTF } from "@react-three/drei"
-import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js"
+import { useGLTF } from "@react-three/drei"
+// import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js"
 import * as THREE from "three"
-import { HolofoilMaterial } from "./HolofoilMaterial"
-import { BackgroundMaterial } from "./BackgroundMaterial"
+// import { HolofoilMaterial } from "./HolofoilMaterial"
+// import { BackgroundMaterial } from "./BackgroundMaterial"
 
 const HoloCard = () => {
   const cardRef = useRef<THREE.Mesh>(null)
@@ -18,7 +18,7 @@ const HoloCard = () => {
   const maskTexture = useLoader(THREE.TextureLoader, "/holo-mask.png")
 
   const bgTexture = useLoader(THREE.TextureLoader, "/cosmic-bg.png")
-  const cardMask = useLoader(THREE.TextureLoader, "/card-mask.png")
+  //   const cardMask = useLoader(THREE.TextureLoader, "/card-mask.png")
 
   frontTexture.flipY = false
   //   maskTexture.flipY = false
