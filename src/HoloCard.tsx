@@ -47,8 +47,27 @@ const HoloCard = () => {
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1
     }
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0]
+        mouseRef.current.x = (touch.clientX / window.innerWidth) * 2 - 1
+        mouseRef.current.y = -(touch.clientY / window.innerHeight) * 2 + 1
+      }
+    }
+
+    const handleTouchEnd = () => {
+      mouseRef.current.x = 0
+      mouseRef.current.y = 0
+    }
+
     window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
+    window.addEventListener("touchmove", handleTouchMove)
+    window.addEventListener("touchend", handleTouchEnd)
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove)
+      window.addEventListener("touchmove", handleTouchMove)
+      window.addEventListener("touchend", handleTouchEnd)
+    }
   }, [])
 
   useFrame((state) => {
