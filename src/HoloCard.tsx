@@ -3,8 +3,8 @@ import { useFrame, useLoader } from "@react-three/fiber"
 import { useGLTF } from "@react-three/drei"
 // import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js"
 import * as THREE from "three"
-// import { HolofoilMaterial } from "./HolofoilMaterial"
-// import { BackgroundMaterial } from "./BackgroundMaterial"
+import "./HolofoilMaterial"
+import "./BackgroundMaterial"
 
 const HoloCard = () => {
   const cardRef = useRef<THREE.Mesh>(null)
