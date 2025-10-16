@@ -1,7 +1,6 @@
 import { useRef, useEffect } from "react"
 import { useFrame, useLoader } from "@react-three/fiber"
 import { useGLTF } from "@react-three/drei"
-// import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js"
 import * as THREE from "three"
 import "./HolofoilMaterial"
 import "./BackgroundMaterial"
@@ -18,10 +17,8 @@ const HoloCard = () => {
   const maskTexture = useLoader(THREE.TextureLoader, "/holo-mask.png")
 
   const bgTexture = useLoader(THREE.TextureLoader, "/cosmic-bg.png")
-  //   const cardMask = useLoader(THREE.TextureLoader, "/card-mask.png")
 
   frontTexture.flipY = false
-  //   maskTexture.flipY = false
 
   // Load the geo
   const { nodes } = useGLTF("/card-plane.glb") as any
@@ -63,6 +60,7 @@ const HoloCard = () => {
     window.addEventListener("mousemove", handleMouseMove)
     window.addEventListener("touchmove", handleTouchMove)
     window.addEventListener("touchend", handleTouchEnd)
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
       window.addEventListener("touchmove", handleTouchMove)
@@ -156,7 +154,6 @@ const HoloCard = () => {
         <mesh
           ref={bgRef}
           position={[0, 0, -1]}
-          //   scale={[3, 3, 3]}
           renderOrder={1}
         >
           <planeGeometry args={[13, 10]} />
