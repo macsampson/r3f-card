@@ -107,7 +107,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
   useFrame((state) => {
     if (!cardRef.current || !stencilRef.current) return
 
-    if (!isTouching.current) {
+    if (isMobile && !isTouching.current) {
       mouseRef.current.x *= 0.95
       mouseRef.current.y *= 0.95
     }
