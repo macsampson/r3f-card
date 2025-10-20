@@ -14,9 +14,9 @@ const HoloCard = () => {
   const ballsRef = useRef<THREE.Mesh>(null)
   const borderRef = useRef<THREE.Mesh>(null)
   const infoRef = useRef<THREE.Mesh>(null)
-  const goldenBallRef = useRef<THREE.Mesh>(null)
+  // const goldenBallRef = useRef<THREE.Mesh>(null)
   const bgRef = useRef<THREE.Mesh>(null)
-  const sparklesRef = useRef<THREE.Mesh>(null)
+  // const sparklesRef = useRef<THREE.Mesh>(null)
 
   const mouseRef = useRef({ x: 0, y: 0 })
   const mousePosVector = useRef(new THREE.Vector2(0, 0))
@@ -24,16 +24,16 @@ const HoloCard = () => {
   const cherubimonMaterialRef = useRef<any>(null)
   const bgMaterialRef = useRef<any>(null)
 
-  const maskTexture = useLoader(THREE.TextureLoader, "/holo-mask.png")
+  // const maskTexture = useLoader(THREE.TextureLoader, "/holo-mask.png")
   const cherubimonTexture = useLoader(
     THREE.TextureLoader,
     "/cherubimon_main.png"
   )
   const ballsTexture = useLoader(THREE.TextureLoader, "/cherubimon_balls.png")
-  const goldenBallTexture = useLoader(
-    THREE.TextureLoader,
-    "/cherubimon_golden_ball.png"
-  )
+  // const goldenBallTexture = useLoader(
+  //   THREE.TextureLoader,
+  //   "/cherubimon_golden_ball.png"
+  // )
   const borderTexture = useLoader(THREE.TextureLoader, "/cherubimon_border.png")
   const infoTexture = useLoader(THREE.TextureLoader, "/cherubimon_info.png")
 
