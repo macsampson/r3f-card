@@ -133,6 +133,7 @@ export const SparkleMaterial = shaderMaterial(
       float angle = atan(toSparkle.y, toSparkle.x);
       float radialDist = length(toSparkle);
 
+      
       float star = cos(angle * 2.0) * 0.5 + 0.5; // 4 lobes
       star = pow(star, 2.0); // Sharpen arms
 
@@ -146,7 +147,7 @@ export const SparkleMaterial = shaderMaterial(
       // Twinkle variation
       float twinkle = sin(viewAngle * 15.0 + cellID * 6.28) * 0.4 + 0.6;
 
-      // Yellow-white sparkle
+      // Yellow-white sparkle // Make a paramter
       vec3 color = mix(vec3(1.0, 1.0, 0.7), vec3(1.0), sparkle * 0.5);
       float alpha = sparkle * angleVis * twinkle * uBrightness * borderMask;
 

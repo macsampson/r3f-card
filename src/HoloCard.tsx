@@ -7,7 +7,11 @@ import "./shaders/HolofoilNoiseMaterial"
 import "./shaders/SparkleMaterial"
 import "./shaders/BackgroundMaterial"
 
-const HoloCard = () => {
+interface HoloCardProps {
+  isMobile?: boolean
+}
+
+const HoloCard = ({ isMobile = false }: HoloCardProps) => {
   const cardRef = useRef<THREE.Mesh>(null)
   const stencilRef = useRef<THREE.Mesh>(null)
   const cherubimonRef = useRef<THREE.Mesh>(null)
@@ -56,6 +60,7 @@ const HoloCard = () => {
     }
 
     const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault() // Prevent scrolling and browser UI changes
       if (e.touches.length > 0) {
         const touch = e.touches[0]
         mouseRef.current.x = (touch.clientX / window.innerWidth) * 2 - 1
@@ -69,13 +74,13 @@ const HoloCard = () => {
     }
 
     window.addEventListener("mousemove", handleMouseMove)
-    window.addEventListener("touchmove", handleTouchMove)
+    window.addEventListener("touchmove", handleTouchMove, { passive: false })
     window.addEventListener("touchend", handleTouchEnd)
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
-      window.addEventListener("touchmove", handleTouchMove)
-      window.addEventListener("touchend", handleTouchEnd)
+      window.removeEventListener("touchmove", handleTouchMove)
+      window.removeEventListener("touchend", handleTouchEnd)
     }
   }, [])
 
@@ -96,14 +101,18 @@ const HoloCard = () => {
     }
 
     // Animate card based on mouse with rotation limits
-    const maxRotation = Math.PI / 6 // 30 degrees max rotation
+    // Reduce rotation sensitivity on mobile for smoother experience
+    const sensitivity = isMobile ? 0.3 : 0.5
+    const maxRotation = isMobile ? Math.PI / 8 : Math.PI / 6 // 22.5° mobile, 30° desktop
+    const lerpSpeed = isMobile ? 0.15 : 0.1 // Slightly faster lerp on mobile
+
     const targetRotationY = THREE.MathUtils.clamp(
-      mouseRef.current.x * 0.5,
+      mouseRef.current.x * sensitivity,
       -maxRotation,
       maxRotation
     )
     const targetRotationX = THREE.MathUtils.clamp(
-      -mouseRef.current.y * 0.5,
+      -mouseRef.current.y * sensitivity,
       -maxRotation,
       maxRotation
     )
@@ -111,12 +120,12 @@ const HoloCard = () => {
     cardRef.current.rotation.y = THREE.MathUtils.lerp(
       cardRef.current.rotation.y,
       targetRotationY,
-      0.1
+      lerpSpeed
     )
     cardRef.current.rotation.x = THREE.MathUtils.lerp(
       cardRef.current.rotation.x,
       targetRotationX,
-      0.1
+      lerpSpeed
     )
 
     // Animate stencil based on mouse
