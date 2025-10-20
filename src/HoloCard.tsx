@@ -63,8 +63,8 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
       e.preventDefault() // Prevent scrolling and browser UI changes
       if (e.touches.length > 0) {
         const touch = e.touches[0]
-        mouseRef.current.x = (touch.clientX / window.innerWidth) * 2 - 1
-        mouseRef.current.y = -(touch.clientY / window.innerHeight) * 2 + 1
+        mouseRef.current.x = ((touch.clientX / window.innerWidth) * 2 - 1) * 3
+        mouseRef.current.y = (-(touch.clientY / window.innerHeight) * 2 + 1) * 3
       }
     }
 
