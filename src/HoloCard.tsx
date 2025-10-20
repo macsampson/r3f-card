@@ -77,7 +77,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
       const deltaX = touch.clientX - touchStart.current.x
       const deltaY = touch.clientY - touchStart.current.y
 
-      const sensitivity = 0.007
+      const sensitivity = 0.01
       mouseRef.current.x += deltaX * sensitivity
       mouseRef.current.y -= deltaY * sensitivity
 
