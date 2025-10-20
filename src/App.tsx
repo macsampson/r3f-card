@@ -12,7 +12,7 @@ function App() {
     }
 
     checkMobile()
-    window.addEventListener('resize', checkMobile)
+    window.addEventListener("resize", checkMobile)
 
     // Prevent iOS Safari from bouncing
     const preventBounce = (e: TouchEvent) => {
@@ -21,11 +21,11 @@ function App() {
       }
     }
 
-    document.addEventListener('touchmove', preventBounce, { passive: false })
+    document.addEventListener("touchmove", preventBounce, { passive: false })
 
     return () => {
-      window.removeEventListener('resize', checkMobile)
-      document.removeEventListener('touchmove', preventBounce)
+      window.removeEventListener("resize", checkMobile)
+      document.removeEventListener("touchmove", preventBounce)
     }
   }, [])
 
@@ -33,8 +33,8 @@ function App() {
     <div style={{ width: "100%", height: "100%", touchAction: "none" }}>
       <Canvas
         camera={{
-          position: [0, 0, isMobile ? 7 : 5],
-          fov: isMobile ? 40 : 50
+          position: [0, 0, isMobile ? 9 : 5],
+          fov: isMobile ? 40 : 50,
         }}
         gl={{ stencil: true }}
       >
