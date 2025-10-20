@@ -127,7 +127,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
 
     // Animate card based on mouse with rotation limits
     // Reduce rotation sensitivity on mobile for smoother experience
-    const sensitivity = isMobile ? 0.3 : 0.5
+    const sensitivity = 0.5
     const maxRotation = Math.PI / 6
     const lerpSpeed = isMobile ? 0.15 : 0.1
 
