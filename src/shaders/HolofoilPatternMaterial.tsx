@@ -2,7 +2,7 @@ import { shaderMaterial } from "@react-three/drei"
 import { extend } from "@react-three/fiber"
 import * as THREE from "three"
 
-export const HolofoilMaterial = shaderMaterial(
+export const HolofoilPatternMaterial = shaderMaterial(
   {
     uTime: 0,
     uMousePos: new THREE.Vector2(0, 0),
@@ -38,16 +38,16 @@ export const HolofoilMaterial = shaderMaterial(
       vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
       return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
     }
-    
+
     void main() {
       // Sample the base texture (card art)
       vec4 texColor = texture2D(uTexture, vUv);
+      
       // Sample the mask
       float holoMask = texture2D(uMaskTexture, vUv).r;
+      // vec2 vUv = vUv * 5.0; // adjust scale
 
-      vec2 center = vec2(0.5,0.5);
-      float distance = length(vUv - center);
-      float stripe = sin((vUv.x + vUv.y + uMousePos.x) * 20.0) * 0.5 + 0.5;
+      float stripe = sin((vUv.x - vUv.y + uMousePos.x) * 20.0) * 0.5 + 0.5;
 
       // Rainbow gradient based on position and mouse
       float hue = fract(vUv.x + vUv.y + uMousePos.x * 0.3 + uMousePos.y * 0.3);
@@ -64,20 +64,20 @@ export const HolofoilMaterial = shaderMaterial(
       vec3 holoColor = mix(vec3(0.1), rainbow, shimmer * 0.6 + fresnel * 0.4);
 
       // Add mask
-      vec3 finalColor = mix(texColor.rgb, holoColor, holoMask);
-
+      // vec3 finalColor = mix(texColor.rgb, holoColor, holoMask);
+      vec3 finalColor = texColor.rgb + holoColor * 0.2;
 
       gl_FragColor = vec4(finalColor, texColor.a);
     }
   `
 )
 
-extend({ HolofoilMaterial })
+extend({ HolofoilPatternMaterial })
 
 // TypeScript declaration for the custom material
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    holofoilMaterial: ThreeElements["shaderMaterial"] & {
+    holofoilPatternMaterial: ThreeElements["shaderMaterial"] & {
       ref?: React.Ref<any>
       uTime?: number
       uMousePos?: THREE.Vector2

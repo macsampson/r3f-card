@@ -2,41 +2,52 @@ import { useRef, useEffect } from "react"
 import { useFrame, useLoader } from "@react-three/fiber"
 import { useGLTF } from "@react-three/drei"
 import * as THREE from "three"
-import "./HolofoilMaterial"
-import "./BackgroundMaterial"
+import "./shaders/HolofoilPatternMaterial"
+import "./shaders/HolofoilNoiseMaterial"
+import "./shaders/SparkleMaterial"
+import "./shaders/BackgroundMaterial"
 
 const HoloCard = () => {
   const cardRef = useRef<THREE.Mesh>(null)
   const stencilRef = useRef<THREE.Mesh>(null)
+  const cherubimonRef = useRef<THREE.Mesh>(null)
+  const ballsRef = useRef<THREE.Mesh>(null)
+  const borderRef = useRef<THREE.Mesh>(null)
+  const infoRef = useRef<THREE.Mesh>(null)
+  const goldenBallRef = useRef<THREE.Mesh>(null)
   const bgRef = useRef<THREE.Mesh>(null)
+  const sparklesRef = useRef<THREE.Mesh>(null)
+
   const mouseRef = useRef({ x: 0, y: 0 })
   const mousePosVector = useRef(new THREE.Vector2(0, 0))
-  const materialRef = useRef<any>(null)
 
-  const frontTexture = useLoader(THREE.TextureLoader, "/kerubi-t1.png")
+  const cherubimonMaterialRef = useRef<any>(null)
+  const bgMaterialRef = useRef<any>(null)
+
   const maskTexture = useLoader(THREE.TextureLoader, "/holo-mask.png")
+  const cherubimonTexture = useLoader(
+    THREE.TextureLoader,
+    "/cherubimon_main.png"
+  )
+  const ballsTexture = useLoader(THREE.TextureLoader, "/cherubimon_balls.png")
+  const goldenBallTexture = useLoader(
+    THREE.TextureLoader,
+    "/cherubimon_golden_ball.png"
+  )
+  const borderTexture = useLoader(THREE.TextureLoader, "/cherubimon_border.png")
+  const infoTexture = useLoader(THREE.TextureLoader, "/cherubimon_info.png")
 
   const bgTexture = useLoader(THREE.TextureLoader, "/cosmic-bg.png")
-
-  frontTexture.flipY = false
 
   // Load the geo
   const { nodes } = useGLTF("/card-plane.glb") as any
   const geo = nodes.Plane.geometry
-  //   geo.computeBoundingBox()
-  //   const bbox = geo.boundingBox!
 
-  //   const cardWidth = (bbox.max.x - bbox.min.x) * 0.5
-  //   const cardHeight = (bbox.max.y - bbox.min.y) * 0.5
-  //   const bgWidth = 4.2 * 1.2
-  //   const bgHeight = 3.3 * 1.2
+  geo.computeBoundingBox()
+  const bbox = geo.boundingBox!
 
-  //   const scaleX = cardWidth / bgWidth
-  //   const scaleY = cardHeight / bgHeight
-
-  //   const maskScale = new THREE.Vector2(scaleX, scaleY)
-
-  // console.log(cardWidth, cardHeight)
+  const geoWidth = bbox.max.x - bbox.min.x
+  const geoHeight = bbox.max.y - bbox.min.y
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -75,14 +86,27 @@ const HoloCard = () => {
     mousePosVector.current.set(mouseRef.current.x, mouseRef.current.y)
 
     // Update shader uniforms
-    if (materialRef.current) {
-      materialRef.current.uMousePos = mousePosVector.current
-      materialRef.current.uTime = state.clock.elapsedTime
+    if (cherubimonMaterialRef.current) {
+      cherubimonMaterialRef.current.uMousePos = mousePosVector.current
+      cherubimonMaterialRef.current.uTime = state.clock.elapsedTime
+    }
+    if (bgMaterialRef.current) {
+      bgMaterialRef.current.uMousePos = mousePosVector.current
+      bgMaterialRef.current.uTime = state.clock.elapsedTime
     }
 
-    // Animate card based on mouse
-    const targetRotationY = mouseRef.current.x * 0.5
-    const targetRotationX = -mouseRef.current.y * 0.5
+    // Animate card based on mouse with rotation limits
+    const maxRotation = Math.PI / 6 // 30 degrees max rotation
+    const targetRotationY = THREE.MathUtils.clamp(
+      mouseRef.current.x * 0.5,
+      -maxRotation,
+      maxRotation
+    )
+    const targetRotationX = THREE.MathUtils.clamp(
+      -mouseRef.current.y * 0.5,
+      -maxRotation,
+      maxRotation
+    )
 
     cardRef.current.rotation.y = THREE.MathUtils.lerp(
       cardRef.current.rotation.y,
@@ -98,26 +122,41 @@ const HoloCard = () => {
     // Animate stencil based on mouse
     stencilRef.current.rotation.copy(cardRef.current.rotation)
 
-    // Animate background based on mouse
-    if (bgRef.current) {
-      bgRef.current.rotation.y = THREE.MathUtils.lerp(
-        bgRef.current.rotation.y,
-        targetRotationY * 0.2,
-        0.1
-      )
-      bgRef.current.rotation.x = THREE.MathUtils.lerp(
-        bgRef.current.rotation.x,
-        targetRotationX * 0.2,
-        0.1
-      )
+    // // Animate sparkle
+    // sparklesRef.current.rotation.copy(cardRef.current.rotation)
 
-      //   console.log("Card rotation: ", cardRef.current.rotation)
-      //   console.log("Background rotation: ", bgRef.current.rotation)
+    // Parallax with lerp
+    if (bgRef.current) {
+      bgRef.current.position.x = THREE.MathUtils.lerp(
+        bgRef.current.position.x,
+        targetRotationY * 0.3,
+        0.1
+      )
+      bgRef.current.position.y = THREE.MathUtils.lerp(
+        bgRef.current.position.y,
+        targetRotationX * 0.3,
+        0.1
+      )
     }
   })
 
   return (
     <group>
+      {/* <mesh
+        ref={sparklesRef}
+        geometry={geo}
+        scale={[0.5, 0.5, 0.5]}
+        position={[0, 0, 2]}
+        renderOrder={9}
+      >
+        <sparkleMaterial
+          uSize={0.2}
+          uBrightness={2.0}
+          uDensity={5.0}
+          uBorderWidth={0.15}
+          transparent
+        />
+      </mesh> */}
       {/* Stencil mesh */}
       <mesh
         ref={stencilRef}
@@ -126,7 +165,6 @@ const HoloCard = () => {
         renderOrder={0}
       >
         <meshStandardMaterial
-          ref={materialRef}
           depthWrite={false}
           depthTest={false}
           stencilWrite={true}
@@ -136,35 +174,99 @@ const HoloCard = () => {
         />
       </mesh>
       {/* Card mesh */}
-      <mesh
+      <group
         ref={cardRef}
-        geometry={geo}
         scale={[0.5, 0.5, 0.5]}
-        renderOrder={2}
       >
-        <holofoilMaterial
-          ref={materialRef}
-          uMousePos={mousePosVector.current}
-          uTexture={frontTexture}
-          uMaskTexture={maskTexture}
-          uTime={1}
-          transparent
-        />
         {/* Background mesh */}
         <mesh
           ref={bgRef}
-          position={[0, 0, -1]}
+          position={[0, 0, -2]}
           renderOrder={1}
         >
-          <planeGeometry args={[13, 10]} />
-          <meshStandardMaterial
-            map={bgTexture}
+          <planeGeometry args={[15, 12]} />
+          <holofoilNoiseMaterial
+            ref={bgMaterialRef}
+            uTexture={bgTexture}
             stencilWrite={true}
             stencilRef={1}
             stencilFunc={THREE.EqualStencilFunc}
+            uBrightness={0.5}
           />
         </mesh>
-      </mesh>
+        <mesh
+          ref={cherubimonRef}
+          position={[0, -0.1, -0.62]}
+          scale={[1.1, 1.2, 1]}
+          renderOrder={3}
+        >
+          <planeGeometry args={[geoWidth, geoHeight]} />
+          <holofoilNoiseMaterial
+            ref={cherubimonMaterialRef}
+            uTexture={cherubimonTexture}
+            uMousePos={mousePosVector.current}
+            transparent
+            depthTest={false}
+            stencilWrite={true}
+            stencilRef={1}
+            stencilFunc={THREE.EqualStencilFunc}
+            uDiagonalStrength={6.5}
+            uBrightness={0.13}
+          />
+        </mesh>
+        <mesh
+          ref={ballsRef}
+          position={[0, 0, 1.3]}
+          scale={[1.05, 1.11, 1]}
+          renderOrder={5}
+        >
+          <planeGeometry args={[geoWidth, geoHeight]} />
+          <meshStandardMaterial
+            map={ballsTexture}
+            transparent
+            stencilWrite={true}
+            stencilRef={1}
+            stencilFunc={THREE.EqualStencilFunc}
+            depthTest={false}
+          />
+        </mesh>
+        <mesh
+          ref={infoRef}
+          position={[0, -0.3, 0]}
+          renderOrder={6}
+        >
+          <planeGeometry args={[geoWidth, geoHeight]} />
+          <meshStandardMaterial
+            map={infoTexture}
+            transparent
+            depthTest={false}
+          />
+        </mesh>
+        {/* <mesh
+          ref={goldenBallRef}
+          position={[0, -0.1, 0]}
+          renderOrder={3}
+        >
+          <planeGeometry args={[geoWidth, geoHeight]} />
+          <meshStandardMaterial
+            map={goldenBallTexture}
+            transparent
+            depthTest={false}
+          />
+        </mesh> */}
+        <mesh
+          ref={borderRef}
+          position={[0, 0, 0]}
+          scale={[1, 1.035, 1]}
+          renderOrder={3}
+        >
+          <planeGeometry args={[geoWidth, geoHeight]} />
+          <meshStandardMaterial
+            map={borderTexture}
+            transparent
+          />
+        </mesh>
+      </group>
     </group>
   )
 }

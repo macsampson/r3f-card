@@ -9,11 +9,11 @@ function App() {
         camera={{ position: [0, 0, 5], fov: 50 }}
         gl={{ stencil: true }}
       >
-        <ambientLight intensity={1} />
-        <directionalLight
-          position={[2, 2, 5]}
+        <ambientLight intensity={1.5} />
+        {/* <directionalLight
+          position={[0, 0, 5]}
           intensity={1}
-        />
+        /> */}
         <Suspense fallback={null}>
           <HoloCard />
         </Suspense>
