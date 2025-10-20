@@ -28,6 +28,10 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
   const cherubimonMaterialRef = useRef<any>(null)
   const bgMaterialRef = useRef<any>(null)
 
+  // Track touch start
+  const touchStart = useRef({ x: 0, y: 0 })
+  const isTouching = useRef(false)
+
   // const maskTexture = useLoader(THREE.TextureLoader, "/holo-mask.png")
   const cherubimonTexture = useLoader(
     THREE.TextureLoader,
@@ -54,6 +58,13 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
   const geoHeight = bbox.max.y - bbox.min.y
 
   useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      isTouching.current = true
+      touchStart.current.x = touch.clientX
+      touchStart.current.y = touch.clientY
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1
@@ -61,18 +72,27 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
 
     const handleTouchMove = (e: TouchEvent) => {
       e.preventDefault() // Prevent scrolling and browser UI changes
-      if (e.touches.length > 0) {
-        const touch = e.touches[0]
-        mouseRef.current.x = ((touch.clientX / window.innerWidth) * 2 - 1) * 3
-        mouseRef.current.y = (-(touch.clientY / window.innerHeight) * 2 + 1) * 3
-      }
+      const touch = e.touches[0]
+
+      const deltaX = touch.clientX - touchStart.current.x
+      const deltaY = touch.clientY - touchStart.current.y
+
+      const sensitivity = 0.003
+      mouseRef.current.x += deltaX * sensitivity
+      mouseRef.current.y -= deltaY * sensitivity
+
+      mouseRef.current.x = Math.max(-1, Math.min(1, mouseRef.current.x))
+      mouseRef.current.y = Math.max(-1, Math.min(1, mouseRef.current.y))
+
+      touchStart.current.x = touch.clientX
+      touchStart.current.y = touch.clientY
     }
 
     const handleTouchEnd = () => {
-      mouseRef.current.x = 0
-      mouseRef.current.y = 0
+      isTouching.current = false
     }
 
+    window.addEventListener("touchstart", handleTouchStart)
     window.addEventListener("mousemove", handleMouseMove)
     window.addEventListener("touchmove", handleTouchMove, { passive: false })
     window.addEventListener("touchend", handleTouchEnd)
@@ -86,6 +106,11 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
 
   useFrame((state) => {
     if (!cardRef.current || !stencilRef.current) return
+
+    if (!isTouching.current) {
+      mouseRef.current.x *= 0.95
+      mouseRef.current.y *= 0.95
+    }
 
     // Update mouse position vector for shader
     mousePosVector.current.set(mouseRef.current.x, mouseRef.current.y)
