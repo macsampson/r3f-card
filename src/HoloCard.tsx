@@ -225,7 +225,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
             stencilWrite={true}
             stencilRef={1}
             stencilFunc={THREE.EqualStencilFunc}
-            uBrightness={0.5}
+            uBrightness={0.9}
           />
         </mesh>
         <mesh
@@ -245,7 +245,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
             stencilRef={1}
             stencilFunc={THREE.EqualStencilFunc}
             uDiagonalStrength={6.5}
-            uBrightness={0.13}
+            uBrightness={0.17}
           />
         </mesh>
         <mesh
