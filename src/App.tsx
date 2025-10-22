@@ -38,7 +38,8 @@ function App() {
         }}
         gl={{ stencil: true }}
       >
-        <ambientLight intensity={1.5} />
+        <ambientLight intensity={3.0} />
+        {/* <directionalLight position={[0, 0, 0]} /> */}
         <Suspense fallback={null}>
           <HoloCard isMobile={isMobile} />
         </Suspense>
