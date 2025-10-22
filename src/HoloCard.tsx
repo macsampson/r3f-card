@@ -6,6 +6,7 @@ import "./shaders/HolofoilPatternMaterial"
 import "./shaders/HolofoilNoiseMaterial"
 import "./shaders/SparkleMaterial"
 import "./shaders/BackgroundMaterial"
+import "./shaders/GlareMaterial"
 
 interface HoloCardProps {
   isMobile?: boolean
@@ -43,11 +44,15 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
   //   "/cherubimon_golden_ball.png"
   // )
   const borderTexture = useLoader(THREE.TextureLoader, "/cherubimon_border.png")
+  // borderTexture.wrapS = THREE.ClampToEdgeWrapping
+  // borderTexture.wrapT = THREE.ClampToEdgeWrapping
+  // borderTexture.generateMipmaps = false // optional
+  // borderTexture.minFilter = THREE.LinearFilter
   const infoTexture = useLoader(THREE.TextureLoader, "/cherubimon_info.png")
 
   const bgTexture = useLoader(THREE.TextureLoader, "/cosmic-bg.png")
 
-  // Load the geo
+  // Load the geo TODO: UVs are flipped - fix in blender
   const { nodes } = useGLTF("/card-plane.glb") as any
   const geo = nodes.Plane.geometry
 
@@ -129,7 +134,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
     // Reduce rotation sensitivity on mobile for smoother experience
     const sensitivity = 0.5
     const maxRotation = Math.PI / 6
-    const lerpSpeed = isMobile ? 0.15 : 0.1
+    const lerpSpeed = 0.1
 
     const targetRotationY = THREE.MathUtils.clamp(
       mouseRef.current.x * sensitivity,
@@ -153,6 +158,10 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
       lerpSpeed
     )
 
+    // if (borderRef.current && cardRef.current) {
+    //   borderRef.current.rotation.copy(cardRef.current.rotation)
+    // }
+
     // Animate stencil based on mouse
     stencilRef.current.rotation.copy(cardRef.current.rotation)
 
@@ -163,12 +172,12 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
     if (bgRef.current) {
       bgRef.current.position.x = THREE.MathUtils.lerp(
         bgRef.current.position.x,
-        targetRotationY * 0.3,
+        targetRotationX * 0.1,
         0.1
       )
       bgRef.current.position.y = THREE.MathUtils.lerp(
         bgRef.current.position.y,
-        targetRotationX * 0.3,
+        targetRotationY * 0.1,
         0.1
       )
     }
@@ -215,10 +224,10 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
         {/* Background mesh */}
         <mesh
           ref={bgRef}
-          position={[0, 0, -2]}
+          position={[0, 0, -2.3]}
           renderOrder={1}
         >
-          <planeGeometry args={[15, 12]} />
+          <planeGeometry args={[23, 12]} />
           <holofoilNoiseMaterial
             ref={bgMaterialRef}
             uTexture={bgTexture}
@@ -226,6 +235,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
             stencilRef={1}
             stencilFunc={THREE.EqualStencilFunc}
             uBrightness={0.9}
+            uDiagonalStrength={1.7}
           />
         </mesh>
         <mesh
@@ -252,11 +262,13 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
           ref={ballsRef}
           position={[0, 0, 1.3]}
           scale={[1.05, 1.11, 1]}
-          renderOrder={5}
+          renderOrder={3}
+          geometry={geo}
         >
-          <planeGeometry args={[geoWidth, geoHeight]} />
-          <meshStandardMaterial
-            map={ballsTexture}
+          {/* <planeGeometry args={[geoWidth, geoHeight]} /> */}
+          <glareMaterial
+            uTexture={ballsTexture}
+            uGlareIntensity={0.0}
             transparent
             stencilWrite={true}
             stencilRef={1}
@@ -268,10 +280,12 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
           ref={infoRef}
           position={[0, -0.3, 0]}
           renderOrder={6}
+          geometry={geo}
         >
-          <planeGeometry args={[geoWidth, geoHeight]} />
-          <meshStandardMaterial
-            map={infoTexture}
+          {/* <planeGeometry args={[geoWidth, geoHeight]} /> */}
+          <glareMaterial
+            uTexture={infoTexture}
+            uGlareIntensity={0.05}
             transparent
             depthTest={false}
           />
@@ -288,16 +302,36 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
             depthTest={false}
           />
         </mesh> */}
-        <mesh
-          ref={borderRef}
+        {/* <mesh
+          // ref={borderRef}
           position={[0, 0, 0]}
-          scale={[1, 1.035, 1]}
+          scale={[1.0, 1.035, 1.0]}
           renderOrder={3}
+          // geometry={geo}
         >
           <planeGeometry args={[geoWidth, geoHeight]} />
           <meshStandardMaterial
             map={borderTexture}
             transparent
+            depthWrite={false}
+          />
+        </mesh> */}
+        <mesh
+          ref={borderRef}
+          position={[0, 0, 0]}
+          scale={[1.0, 1.035, 1.0]}
+          renderOrder={4}
+          geometry={geo}
+        >
+          {/* <planeGeometry args={[geoWidth, geoHeight]} /> */}
+          <glareMaterial
+            uTexture={borderTexture}
+            // uGlareWidth={0.2}
+            uGlareIntensity={0.2}
+            // uGlareColor={new THREE.Color(0.1, 0.1, 0.1)}
+            transparent={true}
+            // blending={THREE.AdditiveBlending}
+            depthWrite={false}
           />
         </mesh>
       </group>
