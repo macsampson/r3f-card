@@ -285,7 +285,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
           {/* <planeGeometry args={[geoWidth, geoHeight]} /> */}
           <glareMaterial
             uTexture={infoTexture}
-            uGlareIntensity={0.05}
+            uGlareIntensity={2.0}
             transparent
             depthTest={false}
           />
@@ -319,7 +319,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
         <mesh
           ref={borderRef}
           position={[0, 0, 0]}
-          scale={[1.0, 1.035, 1.0]}
+          scale={[1.01, 1.035, 1.0]}
           renderOrder={4}
           geometry={geo}
         >
@@ -327,7 +327,7 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
           <glareMaterial
             uTexture={borderTexture}
             // uGlareWidth={0.2}
-            uGlareIntensity={0.2}
+            uGlareIntensity={2.0}
             // uGlareColor={new THREE.Color(0.1, 0.1, 0.1)}
             transparent={true}
             // blending={THREE.AdditiveBlending}
