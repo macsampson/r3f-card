@@ -60,10 +60,10 @@ const HoloCard = ({ isMobile = false }: HoloCardProps) => {
 	const geo = nodes.Plane.geometry;
 
 	geo.computeBoundingBox();
-	const bbox = geo.boundingBox!;
+	// const bbox = geo.boundingBox!;
 
-	const geoWidth = bbox.max.x - bbox.min.x;
-	const geoHeight = bbox.max.y - bbox.min.y;
+	// const geoWidth = bbox.max.x - bbox.min.x;
+	// const geoHeight = bbox.max.y - bbox.min.y;
 
 	useEffect(() => {
 		const handleTouchStart = (e: TouchEvent) => {
