@@ -80,10 +80,11 @@ export const HolofoilNoiseMaterial = shaderMaterial(
 
     void main() {
 
-      vec4 base = texture2D(uTexture, vUv);
+      vec2 flippedUV = vec2(vUv.x, 1.0 - vUv.y);
+      vec4 base = texture2D(uTexture, flippedUV);
 
 
-      float diagonal = (vUv.x - vUv.y) * uDiagonalStrength;
+      float diagonal = (vUv.x + vUv.y) * uDiagonalStrength;
 
 
       vec3 viewDir = normalize(cameraPosition - vPosition);
@@ -122,10 +123,10 @@ export const HolofoilNoiseMaterial = shaderMaterial(
 
 
       // Brightness modulated by both fresnel and facing
-      // float brightness = streaks * (0.5 + facing * 0.3 + fresnel * 0.3);
+      float brightness = streaks * (0.5 + facing * 0.3);
 
       // Combine edge + falloff
-      float brightness = edgeMask * (falloff * 3.5 + fresnel * 0.3) * (0.8 + facing * 0.7);   
+      // float brightness = edgeMask * (falloff * 3.5);   
 
       vec3 holo = rainbowColor * brightness;
 
